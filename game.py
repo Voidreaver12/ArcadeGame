@@ -26,13 +26,15 @@ class Ship:
         self.health = h
         self.MOVE_SPEED = 1
         self.loadSprites()
+        self.width = 64
+        self.height = 64
 
     def loadSprites(self):
-        self.img0 = pygame.image.load('ship0.png')
-        self.img1 = pygame.image.load('ship1.png')
-        self.img2 = pygame.image.load('ship2.png')
-        self.img3 = pygame.image.load('ship3.png')
-        self.img4 = pygame.image.load('ship4.png')
+        self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
+        self.img1 = pygame.image.load('Sprites/PlayerShip/sprite_ship1.png')
+        self.img2 = pygame.image.load('Sprites/PlayerShip/sprite_ship2.png')
+        self.img3 = pygame.image.load('Sprites/PlayerShip/sprite_ship3.png')
+        self.img4 = pygame.image.load('Sprites/PlayerShip/sprite_ship4.png')
         self.currentSprite = self.img0
         self.spriteIndex = 0
 
@@ -47,29 +49,40 @@ class Ship:
         
     def updateSprite(self):
         self.spriteIndex += 1
-        if (self.spriteIndex > 4):
+        if (self.spriteIndex >= 50):
             self.spriteIndex = 0
         if (self.spriteIndex == 0):
             self.currentSprite = self.img0
-        elif (self.spriteIndex == 1):
+        elif (self.spriteIndex == 10):
             self.currentSprite = self.img1
-        elif (self.spriteIndex == 2):
+        elif (self.spriteIndex == 20):
             self.currentSprite = self.img2
-        elif (self.spriteIndex == 3):
+        elif (self.spriteIndex == 30):
             self.currentSprite = self.img3
-        else:
+        elif (self.spriteIndex == 40):
             self.currentSprite = self.img4
 
     def move(self):
         if (GPIO.input(18) == False): # up
-            self.y += self.MOVE_SPEED
-        elif (GPIO.input(20) == False): # down
             self.y -= self.MOVE_SPEED
+            if (self.y < WINDOW_H/2):
+                self.y = WINDOW_H/2
+        elif (GPIO.input(20) == False): # down
+            self.y += self.MOVE_SPEED
+            if (self.y + self.height > WINDOW_H):
+                self.y = WINDOW_H - self.height
         if (GPIO.input(19) == False): # right
             self.x += self.MOVE_SPEED
+            if (self.x + self.width/2 > WINDOW_W):
+                self.x = 0 - self.width/2
         elif (GPIO.input(21) == False): # left
             self.x -= self.MOVE_SPEED
-
+            if (self.x + self.width/2 < 0):
+                self.x = WINDOW_W - self.width/2
+    def draw(self):
+        self.surface = pygame.transform.scale(self.currentSprite, (self.width, self.height))
+        self.rect = pygame.Rect( (self.x, self.y, self.width, self.height) )
+        DISPLAYSURF.blit(self.surface, self.rect)
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
@@ -105,9 +118,12 @@ try:
                 pygame.quit()
                 sys.exit()
         # move ship every frame
-        ship.move()
+        ship.update()
+        DISPLAYSURF.fill((0, 0, 0))
+        ship.draw()
+        pygame.display.update()
         # sleep
-        time.sleep(0.1)
+        #time.sleep(0.05)
 
 
 # Process CTRL C
