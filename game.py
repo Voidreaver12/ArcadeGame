@@ -3,10 +3,13 @@
 #
 #
 
+ONPI = False # a variable that controls whether or not to uses GPIO funcions
+
 # Imports
 import time
-import RPi.GPIO as GPIO
-import numpy as np
+if ONPI:
+    import RPi.GPIO as GPIO
+#import numpy as np
 import random
 import sys
 import math
@@ -63,38 +66,61 @@ class Ship:
             self.currentSprite = self.img4
 
     def move(self):
-        if (GPIO.input(18) == False): # up
-            self.y -= self.MOVE_SPEED
-            if (self.y < WINDOW_H/2):
-                self.y = WINDOW_H/2
-        elif (GPIO.input(20) == False): # down
-            self.y += self.MOVE_SPEED
-            if (self.y + self.height > WINDOW_H):
-                self.y = WINDOW_H - self.height
-        if (GPIO.input(19) == False): # right
-            self.x += self.MOVE_SPEED
-            if (self.x + self.width/2 > WINDOW_W):
-                self.x = 0 - self.width/2
-        elif (GPIO.input(21) == False): # left
-            self.x -= self.MOVE_SPEED
-            if (self.x + self.width/2 < 0):
-                self.x = WINDOW_W - self.width/2
+        print("moving")
+        key = pygame.key.get_pressed()
+        if (ONPI):
+            if (GPIO.input(18) == False or key[pygame.K_w]): # up
+                self.y -= self.MOVE_SPEED
+                if (self.y < WINDOW_H/2):
+                    self.y = WINDOW_H/2
+            elif (GPIO.input(20) == False or key[pygame.K_s]): # down
+                self.y += self.MOVE_SPEED
+                if (self.y + self.height > WINDOW_H):
+                    self.y = WINDOW_H - self.height
+            if (GPIO.input(19) == False or key[pygame.K_d]): # right
+                self.x += self.MOVE_SPEED
+                if (self.x + self.width/2 > WINDOW_W):
+                    self.x = 0 - self.width/2
+            elif (GPIO.input(21) == False or key[pygame.K_a]): # left
+                self.x -= self.MOVE_SPEED
+                if (self.x + self.width/2 < 0):
+                    self.x = WINDOW_W - self.width/2
+        #if testing without the RPi
+        else:
+            if (key[pygame.K_w]): # up
+                self.y -= self.MOVE_SPEED
+                if (self.y < WINDOW_H/2):
+                    self.y = WINDOW_H/2
+            elif (key[pygame.K_s]): # down
+                self.y += self.MOVE_SPEED
+                if (self.y + self.height > WINDOW_H):
+                    self.y = WINDOW_H - self.height
+            if (key[pygame.K_d]): # right
+                self.x += self.MOVE_SPEED
+                if (self.x + self.width/2 > WINDOW_W):
+                    self.x = 0 - self.width/2
+            elif (key[pygame.K_a]): # left
+                self.x -= self.MOVE_SPEED
+                if (self.x + self.width/2 < 0):
+                    self.x = WINDOW_W - self.width/2
+                    
     def draw(self):
         self.surface = pygame.transform.scale(self.currentSprite, (self.width, self.height))
         self.rect = pygame.Rect( (self.x, self.y, self.width, self.height) )
         DISPLAYSURF.blit(self.surface, self.rect)
 
-# GPIO setup
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-# Movement
-GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP) # UP
-GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP) # RIGHT
-GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP) # DOWN
-GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP) # LEFT
-# Shooting
-GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Shoot
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Special Shoot
+if (ONPI):
+    # GPIO setup
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    # Movement
+    GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP) # UP
+    GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP) # RIGHT
+    GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP) # DOWN
+    GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP) # LEFT
+    # Shooting
+    GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Shoot
+    GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Special Shoot
 
 
 
@@ -109,7 +135,8 @@ try:
     # Setup ship
     ship = Ship()
     # Event detection for shooting
-    GPIO.add_event_detect(22, GPIO.RISING, callback = ship, bouncetime = 25)
+    if (ONPI):
+        GPIO.add_event_detect(22, GPIO.RISING, callback = ship, bouncetime = 25)
     # Main loop
     while True:
         # Process pygame events
@@ -129,4 +156,5 @@ try:
 # Process CTRL C
 except(KeyboardInterrupt, SystemExit):
     print("\nCTRL-C detected, exiting.")
-    GPIO.cleanup()
+    if (ONPI):
+        GPIO.cleanup()
