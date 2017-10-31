@@ -7,10 +7,10 @@
 #and Functions: OnCollide(object collided with)
 
 def CheckCollide(A,B):
-    if ((A.x-A.width/2 < B.x + B.width/2) and
-        (A.x+A.width/2 > B.x - B.width/2) and
-        (A.y-A.width/2 < B.y + B.width/2) and
-        (A.y+A.width/2 > B.y - B.width/2)):
+    if ((A.x< B.x + B.width) and
+        (A.x+A.width > B.x) and
+        (A.y < B.y + B.width) and
+        (A.y+A.width > B.y)):
         #collsion detected, OnCollide called on both objects
         try:
             A.OnCollide(B)
