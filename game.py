@@ -25,20 +25,49 @@ class Ship:
         self.y = y
         self.health = h
         self.MOVE_SPEED = 1
+        self.loadSprites()
+
+    def loadSprites(self):
+        self.img0 = pygame.image.load('ship0.png')
+        self.img1 = pygame.image.load('ship1.png')
+        self.img2 = pygame.image.load('ship2.png')
+        self.img3 = pygame.image.load('ship3.png')
+        self.img4 = pygame.image.load('ship4.png')
+        self.currentSprite = self.img0
+        self.spriteIndex = 0
 
     def __call__(self, channel):
         time.sleep(0.005)
         if (GPIO.input(channel)):
             print("bang")
 
+    def update(self):
+        self.move()
+        self.updateSprite()
+        
+    def updateSprite(self):
+        self.spriteIndex += 1
+        if (self.spriteIndex > 4):
+            self.spriteIndex = 0
+        if (self.spriteIndex == 0):
+            self.currentSprite = self.img0
+        elif (self.spriteIndex == 1):
+            self.currentSprite = self.img1
+        elif (self.spriteIndex == 2):
+            self.currentSprite = self.img2
+        elif (self.spriteIndex == 3):
+            self.currentSprite = self.img3
+        else:
+            self.currentSprite = self.img4
+
     def move(self):
-        if (GPIO.input(18) == False):
+        if (GPIO.input(18) == False): # up
             self.y += self.MOVE_SPEED
-        else if (GPIO.input(20) == False):
+        elif (GPIO.input(20) == False): # down
             self.y -= self.MOVE_SPEED
-        if (GPIO.input(19) == False):
+        if (GPIO.input(19) == False): # right
             self.x += self.MOVE_SPEED
-        else if (GPIO.input(21) == False):
+        elif (GPIO.input(21) == False): # left
             self.x -= self.MOVE_SPEED
 
 
