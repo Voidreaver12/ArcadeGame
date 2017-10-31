@@ -1,5 +1,5 @@
 #this file tests the GameUtility functions
-import GameUtility
+import GameUtility as GU
 
 #classes used to test collsion function
 class TestBox:
@@ -28,21 +28,21 @@ print("Collision Tests:")
 box1 = TestBox(0,0,6,6)
 box2 = TestBox(5,5,6,6)
 print("Next two lines should be pass:")
-CheckCollide(box1,box2)
+GU.CheckCollide(box1,box2)
 print("")
 
 #lower left collision
-box1 = TestBox(0,0,6,6)
-box2 = TestBox(-5,-5,6,6)
+box1 = TestBox(0,0,3,3)
+box2 = TestBox(1,1,3,3)
 print("Next two lines should be pass:")
-CheckCollide(box1,box2)
+GU.CheckCollide(box1,box2)
 print("")
 
 #tests bare miss for no collision
 box1 = TestBox(0,0,2,2)
 box2 = TestBox(0,2,2,2)
 print("Next line should be ***:")
-CheckCollide(box1,box2)
+GU.CheckCollide(box1,box2)
 print("***")
 print("")
 
@@ -50,7 +50,7 @@ print("")
 box1 = TestBox(0,0,3,3)
 box2 = TestBox(5,5,3,3)
 print("Next line should be ***:")
-CheckCollide(box1,box2)
+GU.CheckCollide(box1,box2)
 print("***")
 print("")
 
@@ -58,7 +58,7 @@ print("")
 box1 = TestBoxUnd(0,0,6,6)
 box2 = TestBox(5,5,6,6)
 print("Should have one undefined and one pass:")
-CheckCollide(box1,box2)
+GU.CheckCollide(box1,box2)
 print("")
 
 print("Done testing collision")
