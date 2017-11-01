@@ -10,6 +10,7 @@ import time
 if ONPI:
     import RPi.GPIO as GPIO
 #import numpy as np
+import Stars
 import random
 import sys
 import math
@@ -66,7 +67,6 @@ class Ship:
             self.currentSprite = self.img4
 
     def move(self):
-        print("moving")
         key = pygame.key.get_pressed()
         if (ONPI):
             if (GPIO.input(18) == False or key[pygame.K_w]): # up
@@ -132,6 +132,8 @@ try:
     pygame.init()
     DISPLAYSURF = pygame.display.set_mode((WINDOW_W, WINDOW_H))
     pygame.display.set_caption('Arcade Game')
+    # Setup stars
+    stars = Stars.Stars(0,0,WINDOW_W, WINDOW_H,DISPLAYSURF)
     # Setup ship
     ship = Ship()
     # Event detection for shooting
@@ -146,8 +148,10 @@ try:
                 sys.exit()
         # move ship every frame
         ship.update()
+        stars.updateStars()
         DISPLAYSURF.fill((0, 0, 0))
         ship.draw()
+        stars.drawStars()
         pygame.display.update()
         # sleep
         #time.sleep(0.05)
