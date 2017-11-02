@@ -58,18 +58,6 @@ class Stars:
             if (self.starArray2[x].y > self.ymax):
                 self.starArray2[x].y = 0 - random.randint(0,50)
                 self.starArray2[x].x = random.randint(self.xmin,self.xmax)
-
-
-
-      
-#pygame.init()
-#DISPLAYSURF = pygame.display.set_mode((500, 500))
-#stars = Stars(0,0,500,500,DISPLAYSURF)
-#while(True):
-#    DISPLAYSURF.fill((0, 0, 0))
-#    stars.updateStars()
-#    stars.drawStars()
-#    pygame.display.update()
             
 
 
