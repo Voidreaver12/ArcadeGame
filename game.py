@@ -3,7 +3,7 @@
 #
 #
 
-ONPI = False # a variable that controls whether or not to uses GPIO funcions
+ONPI = True # a variable that controls whether or not to uses GPIO funcions
 
 # Imports
 import time
@@ -22,16 +22,43 @@ FPS = 30
 WINDOW_W = 640
 WINDOW_H = 480
 
+class Bullet:
+    width = 6
+    height = 8
+    sprite = pygame.image.load('Sprites/sprite_shot.png')
+    surface = pygame.transform.scale(sprite, (width, height))
+    def __init__(self, x, y, vx, vy):
+        self.x = x - Bullet.width/2
+        self.y = y 
+        self.damage = 1
+        self.vx = vx
+        self.vy = vy
+        self.dead = False
+    def OnCollide(self, enemy):
+        enemy.reduceHealth(self.damage)
+        self.dead = True
+
+    def draw(self):
+        self.rect = pygame.Rect( (self.x, self.y, Bullet.width, Bullet.height) )
+        DISPLAYSURF.blit(Bullet.surface, self.rect)
+    def update(self):
+        self.x += self.vx
+        self.y += self.vy
+        if (self.y < 0):
+            self.dead = True
+
 # Ship class
 class Ship:
-    def __init__(self, x=WINDOW_W/2, y=WINDOW_H/4, h=10):
-        self.x = x
-        self.y = y
+    def __init__(self, x=WINDOW_W/2, y=WINDOW_H*3/4, h=5):
         self.health = h
-        self.MOVE_SPEED = 1
+        self.MOVE_SPEED = 3
         self.loadSprites()
-        self.width = 64
-        self.height = 64
+        self.width = 34
+        self.height = 32
+        self.x = x - self.width/2
+        self.y = y - self.height/2
+        self.bullets = []
+        self.dead = False
 
     def loadSprites(self):
         self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
@@ -45,11 +72,19 @@ class Ship:
     def __call__(self, channel):
         time.sleep(0.005)
         if (GPIO.input(channel)):
-            print("bang")
+            bullet = Bullet(self.x + self.width/2, self.y, 0, -5)
+            self.bullets.append(bullet)
 
     def update(self):
         self.move()
         self.updateSprite()
+        for b in self.bullets:
+            if (b.dead):
+                self.bullets.remove(b)
+                #print("removed bullet")
+                #print(len(self.bullets))
+            else:
+                b.update()
         
     def updateSprite(self):
         self.spriteIndex += 1
@@ -108,6 +143,14 @@ class Ship:
         self.surface = pygame.transform.scale(self.currentSprite, (self.width, self.height))
         self.rect = pygame.Rect( (self.x, self.y, self.width, self.height) )
         DISPLAYSURF.blit(self.surface, self.rect)
+        for b in self.bullets:
+            b.draw()
+
+    def OnCollide(self, enemy):
+        self.health -= 1
+        enemy.destroy()
+        if (self.health <= 0):
+            self.dead = True
 
 if (ONPI):
     # GPIO setup
