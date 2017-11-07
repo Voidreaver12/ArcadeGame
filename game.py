@@ -3,7 +3,7 @@
 #
 #
 
-ONPI = True # a variable that controls whether or not to uses GPIO funcions
+ONPI = False # a variable that controls whether or not to uses GPIO funcions
 
 # Imports
 import time
@@ -15,6 +15,7 @@ import random
 import sys
 import math
 import pygame
+import SpecialBullets as b
 from pygame.locals import *
 
 # Global Variables
@@ -59,6 +60,7 @@ class Ship:
         self.y = y - self.height/2
         self.bullets = []
         self.dead = False
+        self.ready = False
 
     def loadSprites(self):
         self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
@@ -74,6 +76,10 @@ class Ship:
         if (GPIO.input(channel)):
             bullet = Bullet(self.x + self.width/2, self.y, 0, -5)
             self.bullets.append(bullet)
+
+    def shoot(self):
+        bullet = Bullet(self.x + self.width/2, self.y, 0, -5)
+        self.bullets.append(bullet)
 
     def update(self):
         self.move()
@@ -120,6 +126,9 @@ class Ship:
                 self.x -= self.MOVE_SPEED
                 if (self.x + self.width/2 < 0):
                     self.x = WINDOW_W - self.width/2
+            if(key[pygame.K_SPACE]):
+               self.shoot()
+               
         #if testing without the RPi
         else:
             if (key[pygame.K_w]): # up
@@ -138,6 +147,12 @@ class Ship:
                 self.x -= self.MOVE_SPEED
                 if (self.x + self.width/2 < 0):
                     self.x = WINDOW_W - self.width/2
+            key = pygame.key.get_pressed()
+            if(key[pygame.K_SPACE] and self.ready == True):
+               self.shoot()
+               self.ready = False
+            elif (not(key[pygame.K_SPACE]) and self.ready == False):
+                self.ready = True
                     
     def draw(self):
         self.surface = pygame.transform.scale(self.currentSprite, (self.width, self.height))
@@ -182,8 +197,10 @@ try:
     # Event detection for shooting
     if (ONPI):
         GPIO.add_event_detect(22, GPIO.RISING, callback = ship, bouncetime = 25)
+        
     # Main loop
     while True:
+        start_time = time.time()
         # Process pygame events
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -196,6 +213,9 @@ try:
         ship.draw()
         stars.drawStars()
         pygame.display.update()
+        while(time.time() - start_time < 1/FPS):
+            time.sleep(0.00000001)
+        #print(time.time() - start_time)
         # sleep
         #time.sleep(0.05)
 
