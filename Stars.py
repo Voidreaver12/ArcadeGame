@@ -2,6 +2,7 @@
 import random
 import pygame
 import time
+import global_vars
 
 class Star:
     def __init__(self,x,y,speed):
