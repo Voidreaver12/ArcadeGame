@@ -1,4 +1,4 @@
-#import game as g
+import ship as g
 
 class BounceBullet:
     def __init__(self, x, y, vx, vy):

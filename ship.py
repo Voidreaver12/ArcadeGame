@@ -35,6 +35,44 @@ class Bullet:
         if (self.y < 0):
             self.dead = True
 
+class BounceBullet(Bullet):
+    def __init__(self, x, y, vx, vy):
+        Bullet.__init__(self,x, y, vx, vy)
+    def update(self):
+        Bullet.update(self)
+        if (self.x < 0 or self.x > WINDOW_W):
+            self.vx = self.vx*-1
+
+class SplitBullet(Bullet):
+    splitHeight = 200
+    def __init__(self, x, y, vx, vy, ship):
+        Bullet.__init__(self,x, y, vx, vy)
+        self.ship = ship
+    def update(self):
+        Bullet.update(self)
+        if (self.y < self.splitHeight):
+            bullet = Bullet(self.x, self.y, 5, -3)
+            self.ship.bullets.append(bullet)
+            bullet = Bullet(self.x, self.y, -5, -3)
+            self.ship.bullets.append(bullet)
+            bullet = Bullet(self.x, self.y, 2, -5)
+            self.ship.bullets.append(bullet)
+            bullet = Bullet(self.x, self.y, -2, -5)
+            self.ship.bullets.append(bullet)
+            self.dead = True
+
+class SinusoidalBullet(Bullet):
+    def __init__(self, x, y, vx, vy, amplitude = 5, freq = 1, t = 0):
+        Bullet.__init__(self,x, y, vx, vy)
+        self.amplitiude = amplitude
+        self.freq = freq
+        self.t = t
+    def update(self):
+        Bullet.update(self)
+        self.t += 1
+        self.x += self.amplitiude*math.sin(self.t*self.freq)
+            
+
 # Ship class
 class Ship:
     def __init__(self, x=WINDOW_W/2, y=WINDOW_H*3/4, h=5):
@@ -48,6 +86,7 @@ class Ship:
         self.bullets = []
         self.dead = False
         self.ready = False
+        self.weaponType = "basic"
 
     def loadSprites(self):
         self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
@@ -64,8 +103,29 @@ class Ship:
             slef.shoot()
 
     def shoot(self):
-        bullet = Bullet(self.x + self.width/2, self.y, 0, -5)
-        self.bullets.append(bullet)
+        if (self.weaponType == "basic"):
+            bullet = Bullet(self.x + self.width/2, self.y, 0, -5)
+            self.bullets.append(bullet)
+        if (self.weaponType == "bounce"):
+            bullet = BounceBullet(self.x + self.width/2, self.y, 7, -5)
+            self.bullets.append(bullet)
+            bullet = BounceBullet(self.x + self.width/2, self.y, 0, -7)
+            self.bullets.append(bullet)
+            bullet = BounceBullet(self.x + self.width/2, self.y, -7, -5)
+            self.bullets.append(bullet)
+        if (self.weaponType == "split"):
+            bullet = SplitBullet(self.x + self.width/2, self.y, 0, -5, self)
+            self.bullets.append(bullet)
+        if (self.weaponType == "sin"):
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,5,0.5,0)
+            self.bullets.append(bullet)
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,5,0.5,6)
+            self.bullets.append(bullet)
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,15,0.2,15)
+            self.bullets.append(bullet)
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,15,0.2,0)
+            self.bullets.append(bullet)
+
 
     def update(self):
         self.move()
