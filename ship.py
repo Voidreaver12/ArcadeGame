@@ -165,7 +165,6 @@ class Ship:
             bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,15,0.2,0)
             self.bullets.append(bullet)
 
-
     def update(self):
         self.move()
         self.updateSprite()
