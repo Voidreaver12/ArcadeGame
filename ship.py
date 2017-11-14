@@ -212,7 +212,7 @@ class Ship:
                 self.x += self.MOVE_SPEED
                 if (self.x + self.width/2 > WINDOW_W):
                     self.x = 0 - self.width/2
-            elif (GPIO.input(LEFT) == False or key[pygame.K_a]): # left
+            elif (GPIO.input(LEFT) == True or key[pygame.K_a]): # left
                 self.x -= self.MOVE_SPEED
                 if (self.x + self.width/2 < 0):
                     self.x = WINDOW_W - self.width/2
