@@ -58,9 +58,15 @@ class Bullet:
         self.vx = vx
         self.vy = vy
         self.dead = False
-        
+
+    
     def OnCollide(self, enemy):
-        enemy.reduceHealth(self.damage)
+        print(enemy)
+        try:
+            enemy.reduceHealth(self.damage)
+        except:
+            no = False
+            #print("no damage funciton to call")
         self.dead = True
 
     def draw(self):
@@ -123,7 +129,7 @@ class Ship:
         self.bullets = []
         self.dead = False
         self.ready = False
-        self.weaponType = "sin"
+        self.weaponType = "basic"
         self.hasLaser = True
         self.lasers = []
 
@@ -143,7 +149,7 @@ class Ship:
 
     def shoot(self):
         if (self.weaponType == "basic"):
-            bullet = Bullet(self.x + self.width/2, self.y, 0, -5)
+            bullet = Bullet(self.x + self.width/2, self.y, 0, -9)
             self.bullets.append(bullet)
         if (self.weaponType == "bounce"):
             bullet = BounceBullet(self.x + self.width/2, self.y, 7, -5)

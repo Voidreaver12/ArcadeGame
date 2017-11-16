@@ -17,6 +17,8 @@ from global_vars import *
 import ship
 import PowerUps
 import asteroids
+import EnemyManager
+import GameUtility
 if (ONPI == True): import RPi.GPIO as GPIO
 
 if (ONPI):
@@ -44,6 +46,8 @@ try:
     powerups = []
     # Setup ship
     ship = ship.Ship()
+    # Setup enemies
+    enemies = EnemyManager.EnemyManager()
     # Event detection for shooting
     if (ONPI):
         GPIO.add_event_detect(SHOOT, GPIO.RISING, callback = ship, bouncetime = 25)
@@ -58,6 +62,7 @@ try:
         # Update things
         ship.update()
         stars.updateStars()
+        enemies.update()
         if (random.randint(1, 100) == 100):
             pup = PowerUps.PowerUp((random.randint(0, WINDOW_W)), (random.randint(0, int(WINDOW_H/2))))
             powerups.append(pup)
@@ -67,6 +72,13 @@ try:
             p.update()
             if (p.dead):
                 powerups.remove(p)
+
+        # check bullet collsion
+        for enemy in enemies.enemies:
+            if (enemy.dead == True):
+                enemies.enemies.remove(enemy)
+            for bullet in ship.bullets:
+                GameUtility.CheckCollide(enemy,bullet)
                 
         # Draw things
         DISPLAYSURF.fill((0, 0, 0))
@@ -74,6 +86,7 @@ try:
         stars.drawStars()
         for p in powerups:
             p.draw()
+        enemies.draw()
         pygame.display.update()
         
         # Sleep until next frame
