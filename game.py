@@ -15,6 +15,8 @@ import SpecialBullets as b
 from pygame.locals import *
 from global_vars import *
 import ship
+import PowerUps
+import asteroids
 if (ONPI == True): import RPi.GPIO as GPIO
 
 if (ONPI):
@@ -38,6 +40,8 @@ try:
     pygame.display.set_caption('Arcade Game')
     # Setup stars
     stars = Stars.Stars(0,0,WINDOW_W, WINDOW_H,DISPLAYSURF)
+    # Setup powerups
+    powerups = []
     # Setup ship
     ship = ship.Ship()
     # Event detection for shooting
@@ -51,13 +55,28 @@ try:
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-        # move ship every frame
+        # Update things
         ship.update()
         stars.updateStars()
+        if (random.randint(1, 100) == 100):
+            pup = PowerUps.PowerUp((random.randint(0, WINDOW_W)), (random.randint(0, int(WINDOW_H/2))))
+            powerups.append(pup)
+            #print("created powerup")
+            #print(len(powerups))
+        for p in powerups:
+            p.update()
+            if (p.dead):
+                powerups.remove(p)
+                
+        # Draw things
         DISPLAYSURF.fill((0, 0, 0))
         ship.draw()
         stars.drawStars()
+        for p in powerups:
+            p.draw()
         pygame.display.update()
+        
+        # Sleep until next frame
         while(time.time() - start_time < 1/FPS):
             time.sleep(0.00000001)
         #print(time.time() - start_time)

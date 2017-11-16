@@ -7,16 +7,15 @@ from pygame.locals import *
 
 class PowerUp:
     spriteLaser = pygame.image.load('Sprites/PowerUps/laserDrop.png')
-    spriteBounce = pygame.image.load('Sprites/PowerUps/bounceDrop.png')
-    spriteSin = pygame.image.load('Sprites/PowerUps/sinDrop.png')
+    #spriteBounce = pygame.image.load('Sprites/PowerUps/bounceDrop.png')
+    #spriteSin = pygame.image.load('Sprites/PowerUps/sinDrop.png')
     def __init__(self, x, y):
         self.width = 16
         self.height = 16
         self.x = x - self.width/2
         self.y = y - self.height/2
-        self.index = random.randint(0, 2)
+        self.index = 0 # random.randint(0, 2)
         self.type = "null"
-        self.surface = NULL
         self.dead = False
         if (self.index == 0):
             self.type = "laser"
@@ -33,6 +32,8 @@ class PowerUp:
 
     def update(self):
         self.y += 3
+        if (self.y > WINDOW_H):
+            self.dead = True
 
     def OnCollide(ship):
         self.dead = True
