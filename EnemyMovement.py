@@ -17,6 +17,7 @@ class BasicMovement:
         self.manager = manager
         self.xpos = xpos
         self.ypos = ypos
+        self.tag = "enemy"
 
     def ReadFile(self,path):
         f = open(path,'r')
