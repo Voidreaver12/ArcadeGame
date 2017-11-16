@@ -9,8 +9,8 @@
 def CheckCollide(A,B):
     if ((A.x< B.x + B.width) and
         (A.x+A.width > B.x) and
-        (A.y < B.y + B.width) and
-        (A.y+A.width > B.y)):
+        (A.y < B.y + B.height) and
+        (A.y+A.height > B.y)):
         #collsion detected, OnCollide called on both objects
         try:
             A.OnCollide(B)

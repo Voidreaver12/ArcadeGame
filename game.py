@@ -15,6 +15,8 @@ import SpecialBullets as b
 from pygame.locals import *
 from global_vars import *
 import ship
+import PowerUps
+import asteroids
 import EnemyManager
 import GameUtility
 if (ONPI == True): import RPi.GPIO as GPIO
@@ -40,6 +42,8 @@ try:
     pygame.display.set_caption('Arcade Game')
     # Setup stars
     stars = Stars.Stars(0,0,WINDOW_W, WINDOW_H,DISPLAYSURF)
+    # Setup powerups
+    powerups = []
     # Setup ship
     ship = ship.Ship()
     # Setup enemies
@@ -55,24 +59,52 @@ try:
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-        # update stuff
+
+        #################
+        # Update things #
+        #################
         ship.update()
         stars.updateStars()
         enemies.update()
-
-        # check bullet collsion
+        for p in powerups:
+            p.update()
+            if (p.dead):
+                powerups.remove(p)
+                
+        ########################
+        # Check for collisions #
+        ########################
+        # Enemies
         for enemy in enemies.enemies:
-            if (enemy.dead == True):
-                enemies.enemies.remove(enemy)
+            # Hit by bullets
             for bullet in ship.bullets:
                 GameUtility.CheckCollide(enemy,bullet)
-                
-        # draw stuff
+            # Hit by laser
+            for laser in ship.lasers:
+                GameUtility.CheckCollide(enemy, laser)
+            # If they died, remove from array and drop powerup
+            if (enemy.dead == True):
+                enemies.enemies.remove(enemy)
+                if (random.randint(1, 10) == 10):
+                    pup = PowerUps.PowerUp(enemy.x+enemy.width, enemy.y+enemy.height)
+                    powerups.append(pup)
+                    
+        # Powerup collection by ship
+        for p in powerups:
+            GameUtility.CheckCollide(p, ship)
+
+        ###############
+        # Draw things #
+        ###############
         DISPLAYSURF.fill((0, 0, 0))
         ship.draw()
         stars.drawStars()
+        for p in powerups:
+            p.draw()
         enemies.draw()
         pygame.display.update()
+        
+        # Sleep until next frame
         while(time.time() - start_time < 1/FPS):
             time.sleep(0.00000001)
         #print(time.time() - start_time)

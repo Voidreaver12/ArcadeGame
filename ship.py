@@ -17,9 +17,11 @@ class Laser:
     spritePowerUp = pygame.image.load('Sprites/Laser/laserPowerUp.png')
     
     def __init__(self, x, y):
+        self.width = 9
+        self.height = int(WINDOW_H/2)
         self.x = x - Laser.width/2
         self.y = y - Laser.height
-        self.damage = 1
+        self.damage = 0.2
         self.timeToLive = 100
         self.sprite = Laser.sprite0
         self.spriteIndex = 0
@@ -44,6 +46,14 @@ class Laser:
         if (self.spriteIndex >= 3.0):
             self.spriteI = Laser.sprite0
             self.spriteIndex = 0.0
+            
+    def OnCollide(self, enemy):
+        try:
+            enemy.reduceHealth(self.damage)
+        except:
+            no = False
+            #print("no damage function to call")
+            
         
 # Bullet class
 class Bullet:
@@ -88,7 +98,7 @@ class BounceBullet(Bullet):
             self.vx = self.vx*-1
 
 class SplitBullet(Bullet):
-    splitHeight = 200
+    splitHeight = WINDOW_H/2
     def __init__(self, x, y, vx, vy, ship):
         Bullet.__init__(self,x, y, vx, vy)
         self.ship = ship
@@ -120,7 +130,7 @@ class SinusoidalBullet(Bullet):
 class Ship:
     def __init__(self, x=WINDOW_W/2, y=WINDOW_H*3/4, h=5):
         self.health = h
-        self.MOVE_SPEED = 3
+        self.MOVE_SPEED = 5
         self.loadSprites()
         self.width = 34
         self.height = 32
@@ -129,7 +139,7 @@ class Ship:
         self.bullets = []
         self.dead = False
         self.ready = False
-        self.weaponType = "sin"
+        self.weaponType = "basic"
         self.hasLaser = True
         self.lasers = []
 
@@ -149,7 +159,7 @@ class Ship:
 
     def shoot(self):
         if (self.weaponType == "basic"):
-            bullet = Bullet(self.x + self.width/2, self.y, 0, -5)
+            bullet = Bullet(self.x + self.width/2, self.y, 0, -10)
             self.bullets.append(bullet)
         if (self.weaponType == "bounce"):
             bullet = BounceBullet(self.x + self.width/2, self.y, 7, -5)
@@ -281,8 +291,12 @@ class Ship:
             DISPLAYSURF.blit(healthsurface, healthrect)
             
 
-    def OnCollide(self, enemy):
-        self.health -= 1
-        enemy.destroy()
-        if (self.health <= 0):
-            self.dead = True
+    def OnCollide(self, other):
+        if (other.tag == "enemy"):
+            self.health -= 1
+            enemy.destroy()
+            if (self.health <= 0):
+                self.dead = True
+        elif (other.tag == "powerup"):
+            if (other.type == "laser"):
+                self.hasLaser = True
