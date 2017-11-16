@@ -18,6 +18,8 @@ import SpecialBullets as b
 from pygame.locals import *
 from global_vars import *
 import ship
+import EnemyManager
+import GameUtility
 
 if (ONPI):
     # GPIO setup
@@ -42,6 +44,8 @@ try:
     stars = Stars.Stars(0,0,WINDOW_W, WINDOW_H,DISPLAYSURF)
     # Setup ship
     ship = ship.Ship()
+    # Setup enemies
+    enemies = EnemyManager.EnemyManager()
     # Event detection for shooting
     if (ONPI):
         GPIO.add_event_detect(SHOOT, GPIO.RISING, callback = ship, bouncetime = 25)
@@ -53,12 +57,23 @@ try:
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-        # move ship every frame
+        # update stuff
         ship.update()
         stars.updateStars()
+        enemies.update()
+
+        # check bullet collsion
+        for enemy in enemies.enemies:
+            if (enemy.dead == True):
+                enemies.enemies.remove(enemy)
+            for bullet in ship.bullets:
+                GameUtility.CheckCollide(enemy,bullet)
+                
+        # draw stuff
         DISPLAYSURF.fill((0, 0, 0))
         ship.draw()
         stars.drawStars()
+        enemies.draw()
         pygame.display.update()
         while(time.time() - start_time < 1/FPS):
             time.sleep(0.00000001)

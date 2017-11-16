@@ -20,9 +20,15 @@ class Bullet:
         self.vx = vx
         self.vy = vy
         self.dead = False
-        
+
+    
     def OnCollide(self, enemy):
-        enemy.reduceHealth(self.damage)
+        print(enemy)
+        try:
+            enemy.reduceHealth(self.damage)
+        except:
+            no = False
+            #print("no damage funciton to call")
         self.dead = True
 
     def draw(self):
