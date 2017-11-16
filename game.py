@@ -59,28 +59,43 @@ try:
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-        # Update things
+
+        #################
+        # Update things #
+        #################
         ship.update()
         stars.updateStars()
         enemies.update()
-        if (random.randint(1, 100) == 100):
-            pup = PowerUps.PowerUp((random.randint(0, WINDOW_W)), (random.randint(0, int(WINDOW_H/2))))
-            powerups.append(pup)
-            #print("created powerup")
-            #print(len(powerups))
         for p in powerups:
             p.update()
             if (p.dead):
                 powerups.remove(p)
-
-        # check bullet collsion
+                
+        ########################
+        # Check for collisions #
+        ########################
+        # Enemies
         for enemy in enemies.enemies:
-            if (enemy.dead == True):
-                enemies.enemies.remove(enemy)
+            # Hit by bullets
             for bullet in ship.bullets:
                 GameUtility.CheckCollide(enemy,bullet)
-                
-        # Draw things
+            # Hit by laser
+            for laser in ship.lasers:
+                GameUtility.CheckCollide(enemy, laser)
+            # If they died, remove from array and drop powerup
+            if (enemy.dead == True):
+                enemies.enemies.remove(enemy)
+                if (random.randint(1, 10) == 10):
+                    pup = PowerUps.PowerUp(enemy.x+enemy.width, enemy.y+enemy.height)
+                    powerups.append(pup)
+                    
+        # Powerup collection by ship
+        for p in powerups:
+            GameUtility.CheckCollide(p, ship)
+
+        ###############
+        # Draw things #
+        ###############
         DISPLAYSURF.fill((0, 0, 0))
         ship.draw()
         stars.drawStars()

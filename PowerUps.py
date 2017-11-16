@@ -10,6 +10,7 @@ class PowerUp:
     #spriteBounce = pygame.image.load('Sprites/PowerUps/bounceDrop.png')
     #spriteSin = pygame.image.load('Sprites/PowerUps/sinDrop.png')
     def __init__(self, x, y):
+        self.tag = "powerup"
         self.width = 16
         self.height = 16
         self.x = x - self.width/2
@@ -35,9 +36,7 @@ class PowerUp:
         if (self.y > WINDOW_H):
             self.dead = True
 
-    def OnCollide(ship):
+    def OnCollide(self, ship):
         self.dead = True
-        if (self.type == "laser"):
-            ship.hasLaser = True
         
     
