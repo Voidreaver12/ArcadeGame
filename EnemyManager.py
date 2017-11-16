@@ -6,6 +6,7 @@ import pygame
 import math
 import ButterflyEnemy
 import FlyEnemy
+import MantisEnemy
 
 FREQ = 45
 
@@ -60,6 +61,16 @@ class EnemyManager:
                 ypos = int(self.enemyFile[self.index][5])
                 fly = FlyEnemy.FlyEnemy(x,y,path,speed,self,xpos,ypos,1)
                 self.enemies.append(fly)
+                self.index += 1
+            elif (self.enemyFile[self.index][1] == 'm'):
+                x = int(self.enemyFile[self.index][2])
+                y = int(self.enemyFile[self.index][3])
+                path = self.enemyFile[self.index][6]
+                speed = int(self.enemyFile[self.index][7])
+                xpos = int(self.enemyFile[self.index][4])
+                ypos = int(self.enemyFile[self.index][5])
+                mantis = MantisEnemy.MantisEnemy(x,y,path,speed,self,xpos,ypos,3)
+                self.enemies.append(mantis)
                 self.index += 1
             elif (self.enemyFile[self.index][1] == 'DONE'):
                 self.done = True
