@@ -7,6 +7,44 @@ import math
 if (ONPI): import RPi.GPIO as GPIO
 from pygame.locals import *
 
+# Laser class
+class Laser:
+    width = 9
+    height = int(WINDOW_H/2)
+    sprite0 = pygame.image.load('Sprites/Laser/laser0.png')
+    sprite1 = pygame.image.load('Sprites/Laser/laser1.png')
+    sprite2 = pygame.image.load('Sprites/Laser/laser2.png')
+    spritePowerUp = pygame.image.load('Sprites/Laser/laserPowerUp.png')
+    
+    def __init__(self, x, y):
+        self.x = x - Laser.width/2
+        self.y = y - Laser.height
+        self.damage = 1
+        self.timeToLive = 100
+        self.sprite = Laser.sprite0
+        self.spriteIndex = 0
+        self.dead = False
+        
+    def draw(self):
+        self.rect = pygame.Rect( (self.x, self.y, Laser.width, Laser.height) )
+        self.surface = pygame.transform.scale(self.sprite, (Laser.width, Laser.height))
+        DISPLAYSURF.blit(self.surface, self.rect)
+
+    def update(self, shipx, shipy):
+        self.timeToLive -= 1
+        if (self.timeToLive < 0):
+            self.dead = True
+        self.x = shipx - Laser.width/2
+        self.y = shipy - Laser.height
+        self.spriteIndex += 0.5
+        if (self.spriteIndex >= 1.0):
+            self.sprite = Laser.sprite1
+        if (self.spriteIndex >= 2.0):
+            self.sprite = Laser.sprite2
+        if (self.spriteIndex >= 3.0):
+            self.spriteI = Laser.sprite0
+            self.spriteIndex = 0.0
+        
 # Bullet class
 class Bullet:
     width = 6
@@ -77,8 +115,7 @@ class SinusoidalBullet(Bullet):
         Bullet.update(self)
         self.t += 1
         self.x += self.amplitiude*math.sin(self.t*self.freq)
-            
-
+                   
 # Ship class
 class Ship:
     def __init__(self, x=WINDOW_W/2, y=WINDOW_H*3/4, h=5):
@@ -92,7 +129,9 @@ class Ship:
         self.bullets = []
         self.dead = False
         self.ready = False
-        self.weaponType = "basic"
+        self.weaponType = "sin"
+        self.hasLaser = True
+        self.lasers = []
 
     def loadSprites(self):
         self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
@@ -106,7 +145,7 @@ class Ship:
     def __call__(self, channel):
         time.sleep(0.005)
         if (GPIO.input(channel)):
-            slef.shoot()
+            self.shoot()
 
     def shoot(self):
         if (self.weaponType == "basic"):
@@ -132,7 +171,6 @@ class Ship:
             bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,15,0.2,0)
             self.bullets.append(bullet)
 
-
     def update(self):
         self.move()
         self.updateSprite()
@@ -143,6 +181,11 @@ class Ship:
                 #print(len(self.bullets))
             else:
                 b.update()
+        for l in self.lasers:
+            if (l.dead):
+                self.lasers.remove(l)
+            else:
+                l.update(self.x + self.width/2, self.y)
         
     def updateSprite(self):
         self.spriteIndex += 1
@@ -174,7 +217,7 @@ class Ship:
                 self.x += self.MOVE_SPEED
                 if (self.x + self.width/2 > WINDOW_W):
                     self.x = 0 - self.width/2
-            elif (GPIO.input(LEFT) == False or key[pygame.K_a]): # left
+            elif (GPIO.input(LEFT) == True or key[pygame.K_a]): # left
                 self.x -= self.MOVE_SPEED
                 if (self.x + self.width/2 < 0):
                     self.x = WINDOW_W - self.width/2
@@ -183,6 +226,10 @@ class Ship:
                self.ready = False
             elif (not(key[pygame.K_SPACE]) and self.ready == False):
                 self.ready = True
+            if (GPIO.input(ALT_SHOOT) == False and self.hasLaser == True):
+                self.hasLaser = False
+                laser = Laser(self.x + self.width/2, self.y)
+                self.lasers.append(laser)                
         #if testing without the RPi
         else:
             if (key[pygame.K_w]): # up
@@ -206,6 +253,11 @@ class Ship:
                self.ready = False
             elif (not(key[pygame.K_SPACE]) and self.ready == False):
                 self.ready = True
+            if (key[pygame.K_l] and self.hasLaser == True):
+                self.hasLaser = False
+                laser = Laser(self.x + self.width/2, self.y)
+                self.lasers.append(laser)
+                
                     
     def draw(self):
         self.surface = pygame.transform.scale(self.currentSprite, (self.width, self.height))
@@ -213,6 +265,21 @@ class Ship:
         DISPLAYSURF.blit(self.surface, self.rect)
         for b in self.bullets:
             b.draw()
+        if (self.hasLaser):
+            laserposx = 10
+            laserposy = 10 + (self.width/2 + 5)
+            lasersurface = pygame.transform.scale(Laser.spritePowerUp, (99, 9))
+            laserrect = pygame.Rect((laserposx, laserposy, 99, 9))
+            DISPLAYSURF.blit(lasersurface, laserrect)
+        for l in self.lasers:
+            l.draw()
+        for i in range(self.health):
+            healthposx = (i*(self.width/2 + 5)) + 10
+            healthposy = 10
+            healthsurface = pygame.transform.scale(self.img1, (int(self.width/2), int(self.height/2)))
+            healthrect = pygame.Rect( (healthposx, healthposy, self.width/2, self.height/2) )
+            DISPLAYSURF.blit(healthsurface, healthrect)
+            
 
     def OnCollide(self, enemy):
         self.health -= 1

@@ -3,11 +3,8 @@
 #
 #
 
-ONPI = False # a variable that controls whether or not to uses GPIO funcions
-
 # Imports
 import time
-if (ONPI == True): import RPi.GPIO as GPIO
 #import numpy as np
 import Stars
 import random
@@ -20,6 +17,7 @@ from global_vars import *
 import ship
 import EnemyManager
 import GameUtility
+if (ONPI == True): import RPi.GPIO as GPIO
 
 if (ONPI):
     # GPIO setup
