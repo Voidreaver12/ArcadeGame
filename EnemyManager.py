@@ -17,6 +17,7 @@ class EnemyManager:
         self.up = True
         self.spriteIndexButterfly = 0
         self.ReadFile("Levels/level1.txt")
+        self.level = 1
         
     def ReadFile(self, path):
         f = open(path, 'r')
@@ -41,7 +42,7 @@ class EnemyManager:
             enemy.update()
         self.time += 1
 
-        if (self.index < len(self.enemyFile) and self.time >= int(self.enemyFile[self.index][0])):
+        while (self.index < len(self.enemyFile) and self.time >= int(self.enemyFile[self.index][0])):
             if (self.enemyFile[self.index][1] == 'b'):
                 x = int(self.enemyFile[self.index][2])
                 y = int(self.enemyFile[self.index][3])
@@ -74,6 +75,7 @@ class EnemyManager:
                 self.index += 1
             elif (self.enemyFile[self.index][1] == 'DONE'):
                 self.done = True
+                self.index += 1
 
         if (self.done == True and self.time%FREQ == 0 and len(self.enemies) != 0):
             r = random.randint(0,len(self.enemies)-1)
@@ -91,10 +93,17 @@ class EnemyManager:
         if (self.spriteIndexButterfly >= 40):
             self.spriteIndexButterfly = 0
             
-            
+        if (self.done == True and len(self.enemies) == 0):
+            self.nextLevel()
 
     def draw(self):
         for enemy in self.enemies:
             enemy.draw()
+
+    def nextLevel(self):
+        print("LEVEL COMPLETE")
+        self.level += 1
+        self.ReadFile("Levels/level" + str(self.level) + ".txt")
+        
 
     

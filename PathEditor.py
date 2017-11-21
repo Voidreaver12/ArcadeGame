@@ -5,7 +5,8 @@ import math
 import json
 from global_vars import *
 from pygame.locals import *
-fileName = "PathsTemp/attack.txt"
+
+fileName = "PathsTemp/" + input("enter the name for the path") + ".txt"
 
 points = []
 

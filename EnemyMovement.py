@@ -24,7 +24,7 @@ class BasicMovement:
         self.pathCords = [[int(x) for x in line.split()] for line in f]
         #self.x = self.pathCords[0][0]
         #self.y = self.pathCords[0][1]
-        self.step = 1
+        self.step = 0
 
     def UpdatePosition(self):
         if (self.step < len(self.pathCords)):
