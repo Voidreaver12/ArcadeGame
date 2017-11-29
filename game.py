@@ -46,6 +46,7 @@ try:
     # Setup powerups, explosions
     powerups = []
     explosions = []
+    rocks = []
     # Setup ship
     ship = ship.Ship()
     # Setup enemies
@@ -76,6 +77,12 @@ try:
             e.update()
             if (e.dead):
                 explosions.remove(e)
+        for r in rocks:
+            r.update()
+        if (random.randint(1,10) == 10):
+            rock = asteroids.Asteroid()
+            rocks.append(rock)
+            print('added a rock')
         ########################
         # Check for collisions #
         ########################
@@ -111,6 +118,8 @@ try:
         for e in explosions:
             e.draw()
         enemies.draw()
+        for r in rocks:
+            r.draw()
         pygame.display.update()
         
         # Sleep until next frame
