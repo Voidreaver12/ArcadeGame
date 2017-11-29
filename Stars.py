@@ -20,8 +20,8 @@ class Stars:
         self.xmax = xmax
         self.ymax = ymax
         self.speed = speed
-        self.width = 64
-        self.height = 64
+        self.width = 6
+        self.height = 6
         self.loadSprites()
         self.initializeStars()
 

@@ -6,16 +6,18 @@ from pygame.locals import *
 
 
 class PowerUp:
-    spriteLaser = pygame.image.load('Sprites/PowerUps/laserDrop.png')
-    #spriteBounce = pygame.image.load('Sprites/PowerUps/bounceDrop.png')
-    #spriteSin = pygame.image.load('Sprites/PowerUps/sinDrop.png')
+    spriteLaser = pygame.image.load('Sprites/PowerUps/laserDrop1.png')
+    spriteBounce = pygame.image.load('Sprites/PowerUps/bulletBounceDrop.png')
+    spriteSin = pygame.image.load('Sprites/PowerUps/bulletSinDrop.png')
+    spriteSplit = pygame.image.load('Sprites/PowerUps/bulletSplitDrop.png')
+
     def __init__(self, x, y):
         self.tag = "powerup"
-        self.width = 16
-        self.height = 16
+        self.width = 32
+        self.height = 32
         self.x = x - self.width/2
         self.y = y - self.height/2
-        self.index = 0 # random.randint(0, 2)
+        self.index = random.randint(0, 3)
         self.type = "null"
         self.dead = False
         if (self.index == 0):
@@ -23,8 +25,13 @@ class PowerUp:
             self.surface = pygame.transform.scale(PowerUp.spriteLaser, (self.width, self.height))
         elif (self.index == 1):
             self.type = "bounce_bullet"
+            self.surface = pygame.transform.scale(PowerUp.spriteBounce, (self.width, self.height))
         elif (self.index == 2):
             self.type = "sin_bullet"
+            self.surface = pygame.transform.scale(PowerUp.spriteSin, (self.width, self.height))
+        elif (self.index == 3):
+            self.type = "split_bullet"
+            self.surface = pygame.transform.scale(PowerUp.spriteSplit, (self.width, self.height))
 
 
     def draw(self):

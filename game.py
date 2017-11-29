@@ -17,6 +17,7 @@ from global_vars import *
 import ship
 import PowerUps
 import asteroids
+import explosion
 import EnemyManager
 import GameUtility
 if (ONPI == True): import RPi.GPIO as GPIO
@@ -42,8 +43,9 @@ try:
     pygame.display.set_caption('Arcade Game')
     # Setup stars
     stars = Stars.Stars(0,0,WINDOW_W, WINDOW_H,DISPLAYSURF)
-    # Setup powerups
+    # Setup powerups, explosions
     powerups = []
+    explosions = []
     # Setup ship
     ship = ship.Ship()
     # Setup enemies
@@ -70,7 +72,10 @@ try:
             p.update()
             if (p.dead):
                 powerups.remove(p)
-                
+        for e in explosions:
+            e.update()
+            if (e.dead):
+                explosions.remove(e)
         ########################
         # Check for collisions #
         ########################
@@ -85,6 +90,8 @@ try:
             # If they died, remove from array and drop powerup
             if (enemy.dead == True):
                 enemies.enemies.remove(enemy)
+                boom = explosion.Explosion(enemy.x+enemy.width, enemy.y+enemy.height)
+                explosions.append(boom)
                 if (random.randint(1, 10) == 10):
                     pup = PowerUps.PowerUp(enemy.x+enemy.width, enemy.y+enemy.height)
                     powerups.append(pup)
@@ -101,6 +108,8 @@ try:
         stars.drawStars()
         for p in powerups:
             p.draw()
+        for e in explosions:
+            e.draw()
         enemies.draw()
         pygame.display.update()
         
