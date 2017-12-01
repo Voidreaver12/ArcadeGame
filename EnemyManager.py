@@ -7,17 +7,19 @@ import math
 import ButterflyEnemy
 import FlyEnemy
 import MantisEnemy
+import GameUtility
 
 FREQ = 45
 
 class EnemyManager:
-    def __init__(self):
+    def __init__(self, ship):
         self.enemies = []
         self.wiggle = -30
         self.up = True
         self.spriteIndexButterfly = 0
         self.ReadFile("Levels/level1.txt")
         self.level = 1
+        self.ship = ship
         
     def ReadFile(self, path):
         f = open(path, 'r')
@@ -40,6 +42,8 @@ class EnemyManager:
                 
         for enemy in self.enemies:
             enemy.update()
+            GameUtility.CheckCollide(enemy,self.ship)
+            
         self.time += 1
 
         while (self.index < len(self.enemyFile) and self.time >= int(self.enemyFile[self.index][0])):

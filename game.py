@@ -47,7 +47,7 @@ try:
     # Setup ship
     ship = ship.Ship()
     # Setup enemies
-    enemies = EnemyManager.EnemyManager()
+    enemies = EnemyManager.EnemyManager(ship)
     # Event detection for shooting
     if (ONPI):
         GPIO.add_event_detect(SHOOT, GPIO.RISING, callback = ship, bouncetime = 25)

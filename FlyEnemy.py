@@ -50,6 +50,9 @@ class FlyEnemy(BasicMovement):
         self.rect = pygame.Rect( (self.x, self.y, self.width, self.height) )
         DISPLAYSURF.blit(self.surface, self.rect)
 
+    def destroy(self):
+        self.dead = True
+
     
 
 

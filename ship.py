@@ -142,6 +142,7 @@ class Ship:
         self.weaponType = "basic"
         self.hasLaser = True
         self.lasers = []
+        self.damage = 10
 
     def loadSprites(self):
         self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
