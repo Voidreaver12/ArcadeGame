@@ -18,8 +18,8 @@ class EnemyManager:
         self.wiggle = -30
         self.up = True
         self.spriteIndexButterfly = 0
-        self.ReadFile("Levels/level5.txt")
-        self.level = 10
+        self.ReadFile("Levels/level1.txt")
+        self.level = 1
         self.ship = ship
         self.FREQ = FREQ
         
