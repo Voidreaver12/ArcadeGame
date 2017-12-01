@@ -98,7 +98,7 @@ class BounceBullet(Bullet):
             self.vx = self.vx*-1
 
 class SplitBullet(Bullet):
-    splitHeight = WINDOW_H/2
+    splitHeight = WINDOW_H*2/3
     def __init__(self, x, y, vx, vy, ship):
         Bullet.__init__(self,x, y, vx, vy)
         self.ship = ship
@@ -143,6 +143,8 @@ class Ship:
         self.hasLaser = True
         self.lasers = []
         self.damage = 10
+        self.maxBulletTime = 100
+        self.bulletTimer = 0
 
     def loadSprites(self):
         self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
@@ -162,17 +164,17 @@ class Ship:
         if (self.weaponType == "basic"):
             bullet = Bullet(self.x + self.width/2, self.y, 0, -10)
             self.bullets.append(bullet)
-        if (self.weaponType == "bounce"):
+        elif (self.weaponType == "bounce"):
             bullet = BounceBullet(self.x + self.width/2, self.y, 7, -5)
             self.bullets.append(bullet)
             bullet = BounceBullet(self.x + self.width/2, self.y, 0, -7)
             self.bullets.append(bullet)
             bullet = BounceBullet(self.x + self.width/2, self.y, -7, -5)
             self.bullets.append(bullet)
-        if (self.weaponType == "split"):
+        elif (self.weaponType == "split"):
             bullet = SplitBullet(self.x + self.width/2, self.y, 0, -5, self)
             self.bullets.append(bullet)
-        if (self.weaponType == "sin"):
+        elif (self.weaponType == "sin"):
             bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,5,0.5,0)
             self.bullets.append(bullet)
             bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,5,0.5,6)
@@ -185,6 +187,9 @@ class Ship:
     def update(self):
         self.move()
         self.updateSprite()
+        self.bulletTimer -= 1
+        if (self.bulletTimer <= 0):
+            self.weaponType = "basic"
         for b in self.bullets:
             if (b.dead):
                 self.bullets.remove(b)
@@ -301,3 +306,13 @@ class Ship:
         elif (other.tag == "powerup"):
             if (other.type == "laser"):
                 self.hasLaser = True
+            elif (other.type == "split_bullet"):
+                self.bulletTimer = self.maxBulletTime
+                self.weaponType = "split"
+            elif (other.type == "bounce_bullet"):
+                self.bulletTimer = self.maxBulletTime
+                self.weaponType = "bounce"
+            elif (other.type == "sin_bullet"):
+                self.bulletTimer = self.maxBulletTime
+                self.weaponType = "sin"
+

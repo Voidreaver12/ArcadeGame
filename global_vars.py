@@ -1,9 +1,9 @@
 # Global variables and constants
 import pygame
-ONPI = False
+ONPI = True
 FPS = 30
-WINDOW_W = 640
-WINDOW_H = 480
+WINDOW_W = 1600 #640
+WINDOW_H = 900 #480
 UP = 21
 RIGHT = 20
 DOWN = 19
