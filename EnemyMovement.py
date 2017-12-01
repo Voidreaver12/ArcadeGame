@@ -4,10 +4,10 @@ import time
 import math
 import json
 
-XOFF = 50
-YOFF = 50
-DX = 40
-DY = 40
+XOFF = 90
+YOFF = 75
+DX = 60
+DY = 60
 
 class BasicMovement:
     def __init__(self,path,speed,manager,xpos,ypos):

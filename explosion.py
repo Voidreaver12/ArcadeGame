@@ -9,10 +9,10 @@ class Explosion:
     sprite4 = pygame.image.load('Sprites/Explosion/sprite_explosion4.png')
     
     def __init__(self, x, y):
-        self.width = 32
-        self.height = 32
-        self.x = x - self.width/2
-        self.y = y - self.height/2
+        self.width = 48
+        self.height = 48
+        self.x = x - self.width
+        self.y = y - self.height
         self.spriteIndex = 0.0
         self.surface = pygame.transform.scale(Explosion.sprite0, (self.width, self.height))
         self.rect = pygame.Rect((self.x, self.y, self.width, self.height))

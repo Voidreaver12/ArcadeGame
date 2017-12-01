@@ -11,8 +11,8 @@ class ButterflyEnemy(BasicMovement):
         BasicMovement.__init__(self,path,speed,manager,xpos,ypos)
         self.x = x
         self.y = y
-        self.width = 26
-        self.height = 26
+        self.width = 39
+        self.height = 39
         self.health = health
         self.dead = False
         self.loadSprites()

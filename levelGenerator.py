@@ -12,13 +12,17 @@ enemies = []
 while(True):
     selection = input("What do you want to add? enemies(1), change the time(2), or exit program(3)")
     if (selection == "1"):
-        numberOfEnemies = int(input("How many? (14 per row)?"))
+        numberOfEnemies = int(input("How many? (24 per row)?"))
         offset = int(input("How much ofset for the columns?"))
         row = int(input("What row?"))
         typeOfEnemy = input("What type? (b)(f)(m)")
         path = "Paths/" + input("What path should they come in on?") + ".txt"
         speed = input("At what speed?")
         interval = int(input("A what interval?"))
+        selection = input("Reverse Direction (Y)")
+        reverse = False
+        if (selection == "Y"):
+            reverse = True
         xcord = 0
         ycord = 0
 
@@ -28,19 +32,25 @@ while(True):
             xcord = 0
             ycord = 0
         if (selection == "m"):
-            xcord = 320
+            xcord = 800
             ycord = 0
         if (selection == "r"):
-            xcord = 640
+            xcord = 1600
             ycord = 0
         if (selection == "c"):
             xcord = input("xcord?")
             ycord = input("ycord?")
-
-        for x in range(numberOfEnemies):    
-            enemies.append([time, typeOfEnemy, xcord, ycord, x+offset, row, path, speed])
-            time += interval
-                       
+        if (not reverse):
+            for x in range(numberOfEnemies):    
+                enemies.append([time, typeOfEnemy, xcord, ycord, x+offset, row, path, speed])
+                time += interval
+        else:
+            time += (numberOfEnemies-1)*interval
+            for x in range(numberOfEnemies):    
+                enemies.append([time, typeOfEnemy, xcord, ycord, x+offset, row, path, speed])
+                time -= interval
+            time += (numberOfEnemies+1)*interval
+                
     elif (selection == "2"):
         print("time is currently ", time)
         time = int(input("What should time be changed to?"))

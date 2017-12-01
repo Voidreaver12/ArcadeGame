@@ -57,8 +57,8 @@ class Laser:
         
 # Bullet class
 class Bullet:
-    width = 6
-    height = 8
+    width = 9
+    height = 12
     sprite = pygame.image.load('Sprites/sprite_shot.png')
     surface = pygame.transform.scale(sprite, (width, height))
     def __init__(self, x, y, vx, vy):
@@ -71,7 +71,7 @@ class Bullet:
 
     
     def OnCollide(self, enemy):
-        print(enemy)
+        #print(enemy)
         try:
             enemy.reduceHealth(self.damage)
         except:
@@ -98,20 +98,20 @@ class BounceBullet(Bullet):
             self.vx = self.vx*-1
 
 class SplitBullet(Bullet):
-    splitHeight = WINDOW_H*2/3
+    splitHeight = WINDOW_H*0.4
     def __init__(self, x, y, vx, vy, ship):
         Bullet.__init__(self,x, y, vx, vy)
         self.ship = ship
     def update(self):
         Bullet.update(self)
         if (self.y < self.splitHeight):
-            bullet = Bullet(self.x, self.y, 5, -3)
+            bullet = Bullet(self.x, self.y, 5, -7)
             self.ship.bullets.append(bullet)
-            bullet = Bullet(self.x, self.y, -5, -3)
+            bullet = Bullet(self.x, self.y, -5, -7)
             self.ship.bullets.append(bullet)
-            bullet = Bullet(self.x, self.y, 2, -5)
+            bullet = Bullet(self.x, self.y, 2, -9)
             self.ship.bullets.append(bullet)
-            bullet = Bullet(self.x, self.y, -2, -5)
+            bullet = Bullet(self.x, self.y, -2, -9)
             self.ship.bullets.append(bullet)
             self.dead = True
 
@@ -130,10 +130,10 @@ class SinusoidalBullet(Bullet):
 class Ship:
     def __init__(self, x=WINDOW_W/2, y=WINDOW_H*3/4, h=5):
         self.health = h
-        self.MOVE_SPEED = 5
+        self.MOVE_SPEED = 10
         self.loadSprites()
-        self.width = 34
-        self.height = 32
+        self.width = 51
+        self.height = 48
         self.x = x - self.width/2
         self.y = y - self.height/2
         self.bullets = []
@@ -162,26 +162,26 @@ class Ship:
 
     def shoot(self):
         if (self.weaponType == "basic"):
-            bullet = Bullet(self.x + self.width/2, self.y, 0, -10)
+            bullet = Bullet(self.x + self.width/2, self.y, 0, -18)
             self.bullets.append(bullet)
         elif (self.weaponType == "bounce"):
-            bullet = BounceBullet(self.x + self.width/2, self.y, 7, -5)
+            bullet = BounceBullet(self.x + self.width/2, self.y, 7, -9)
             self.bullets.append(bullet)
-            bullet = BounceBullet(self.x + self.width/2, self.y, 0, -7)
+            bullet = BounceBullet(self.x + self.width/2, self.y, 0, -13)
             self.bullets.append(bullet)
-            bullet = BounceBullet(self.x + self.width/2, self.y, -7, -5)
+            bullet = BounceBullet(self.x + self.width/2, self.y, -7, -9)
             self.bullets.append(bullet)
         elif (self.weaponType == "split"):
-            bullet = SplitBullet(self.x + self.width/2, self.y, 0, -5, self)
+            bullet = SplitBullet(self.x + self.width/2, self.y, 0, -10, self)
             self.bullets.append(bullet)
         elif (self.weaponType == "sin"):
-            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,5,0.5,0)
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -10,5,0.5,0)
             self.bullets.append(bullet)
-            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,5,0.5,6)
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -10,5,0.5,6)
             self.bullets.append(bullet)
-            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,15,0.2,15)
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -10,15,0.2,15)
             self.bullets.append(bullet)
-            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -5,15,0.2,0)
+            bullet = SinusoidalBullet(self.x + self.width/2, self.y, 0, -10,15,0.2,0)
             self.bullets.append(bullet)
 
     def update(self):

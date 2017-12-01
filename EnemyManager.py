@@ -10,6 +10,7 @@ import MantisEnemy
 import GameUtility
 
 FREQ = 45
+DIF_MOD = 3
 
 class EnemyManager:
     def __init__(self, ship):
@@ -17,9 +18,10 @@ class EnemyManager:
         self.wiggle = -30
         self.up = True
         self.spriteIndexButterfly = 0
-        self.ReadFile("Levels/level1.txt")
-        self.level = 1
+        self.ReadFile("Levels/level5.txt")
+        self.level = 10
         self.ship = ship
+        self.FREQ = FREQ
         
     def ReadFile(self, path):
         f = open(path, 'r')
@@ -52,6 +54,8 @@ class EnemyManager:
                 y = int(self.enemyFile[self.index][3])
                 path = self.enemyFile[self.index][6]
                 speed = int(self.enemyFile[self.index][7])
+                if (self.level > 5):
+                    speed += (self.level-5)*DIF_MOD
                 xpos = int(self.enemyFile[self.index][4])
                 ypos = int(self.enemyFile[self.index][5])
                 butterfly = ButterflyEnemy.ButterflyEnemy(x,y,path,speed,self,xpos,ypos,1)
@@ -62,6 +66,8 @@ class EnemyManager:
                 y = int(self.enemyFile[self.index][3])
                 path = self.enemyFile[self.index][6]
                 speed = int(self.enemyFile[self.index][7])
+                if (self.level > 5):
+                    speed += (self.level-5)*DIF_MOD
                 xpos = int(self.enemyFile[self.index][4])
                 ypos = int(self.enemyFile[self.index][5])
                 fly = FlyEnemy.FlyEnemy(x,y,path,speed,self,xpos,ypos,1)
@@ -72,6 +78,8 @@ class EnemyManager:
                 y = int(self.enemyFile[self.index][3])
                 path = self.enemyFile[self.index][6]
                 speed = int(self.enemyFile[self.index][7])
+                if (self.level > 5):
+                    speed += (self.level-5)*DIF_MOD
                 xpos = int(self.enemyFile[self.index][4])
                 ypos = int(self.enemyFile[self.index][5])
                 mantis = MantisEnemy.MantisEnemy(x,y,path,speed,self,xpos,ypos,3)
@@ -81,23 +89,25 @@ class EnemyManager:
                 self.done = True
                 self.index += 1
 
-        if (self.done == True and self.time%FREQ == 0 and len(self.enemies) != 0):
+        if ((self.done == True or self.level > 4) and self.time%FREQ == 0 and len(self.enemies) != 0):
             r = random.randint(0,len(self.enemies)-1)
-            if (self.enemies[r].step >= len(self.enemies[r].pathCords)):
-                r2 = random.randint(0,2)
+            if (self.enemies[r].step >= len(self.enemies[r].pathCords) or self.level > 5):
+                r2 = random.randint(0,3)
                 if (r2 == 0):
                     self.enemies[r].NewPath("Paths/attack.txt")
                 elif (r2 == 1):
                     self.enemies[r].NewPath("Paths/attackl.txt")
                 elif (r2 == 2):
                     self.enemies[r].NewPath("Paths/attackr.txt")
-                print("attacking")
+                elif (r2 == 3):
+                    self.enemies[r].NewPath("Paths/attackM.txt")
+                #print("attacking")
        
         self.spriteIndexButterfly += 1
         if (self.spriteIndexButterfly >= 40):
             self.spriteIndexButterfly = 0
             
-        if (self.done == True and len(self.enemies) == 0):
+        if (len(self.enemies) == 0):
             self.nextLevel()
 
     def draw(self):
@@ -107,7 +117,12 @@ class EnemyManager:
     def nextLevel(self):
         print("LEVEL COMPLETE")
         self.level += 1
-        self.ReadFile("Levels/level" + str(self.level) + ".txt")
+        self.done = False
+        if (self.level <= 5):
+            self.ReadFile("Levels/level" + str(self.level) + ".txt")
+        else:
+            self.ReadFile("Levels/level" + str(5) + ".txt")
+            self.FREQ -= 5
         
 
     
