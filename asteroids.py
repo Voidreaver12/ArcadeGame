@@ -20,6 +20,7 @@ class Asteroid:
         self.width = random.randint(16, 48) #32
         self.height = self.width #32
         self.padding = 20
+        self.dead = False
         self.vx = 0
         self.vy = 0
         self.currentSprite = Asteroid.sprite0
@@ -49,13 +50,18 @@ class Asteroid:
             
     def checkBounds(self):
         if (self.vx >= 0.0 and self.x >= WINDOW_W-self.width):
-            self.vx *= -1
+            #self.vx *= -1
+            self.dead = True
         if (self.vx <= 0.0 and self.x <= 0.0):
-            self.vx *= -1
+            #self.vx *= -1
+            self.dead = True
         if (self.vy >= 0.0 and self.y >= WINDOW_H-self.height):
-            self.vy *= -1
+            #self.vy *= -1
+            self.dead = True
         if (self.vy <= 0.0 and self.y <= 0.0):
-            self.vy *= -1
+            #self.vy *= -1
+            self.dead = True
+
     def update(self):
         self.x += self.vx
         self.y += self.vy

@@ -1,9 +1,8 @@
-import global_vars
-from global_vars import *
 import time
 import random
 import pygame
 import math
+from global_vars import *
 if (ONPI): import RPi.GPIO as GPIO
 from pygame.locals import *
 
@@ -145,6 +144,7 @@ class Ship:
         self.damage = 10
         self.maxBulletTime = 100
         self.bulletTimer = 0
+        self.game_state = 1
 
     def loadSprites(self):
         self.img0 = pygame.image.load('Sprites/PlayerShip/sprite_ship0.png')
@@ -158,6 +158,16 @@ class Ship:
     def __call__(self, channel):
         time.sleep(0.005)
         if (GPIO.input(channel)):
+            print('game state: ' + str(self.game_state))
+            if (self.game_state == 1):
+                self.game_state = 2
+            else:
+                self.shoot()
+            
+    def call(self):
+        if (HAS_GAME_BEGUN == 0):
+            HAS_GAME_BEGUN = 1
+        else:
             self.shoot()
 
     def shoot(self):
@@ -185,6 +195,8 @@ class Ship:
             self.bullets.append(bullet)
 
     def update(self):
+        if (self.health <= 0):
+            self.game_state = 3
         self.move()
         self.updateSprite()
         self.bulletTimer -= 1
